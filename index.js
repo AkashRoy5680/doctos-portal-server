@@ -81,9 +81,9 @@ async function run() {
       .collection("bookings");
     const userCollection = client.db("doctors_portal").collection("users");
     const doctorCollection = client.db("doctors_portal").collection("doctors");
-    const paymentCollection = client
-      .db("doctors_portal")
-      .collection("payments");
+    const paymentCollection = client.db("doctors_portal").collection("payments");
+    const reviewCollection = client.db("doctors_portal").collection("reviews");
+
 
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -246,7 +246,13 @@ async function run() {
       res.send(result);
     });
 
-    app.delete("/doctor/:emai", verifyJwt, verifyAdmin, async (req, res) => {
+    app.post("/review", verifyJwt, verifyAdmin, async (req, res) => {
+      const reviews = req.body;
+      const result = await reviewCollection.insertOne(reviews);
+      res.send(result);
+    });
+
+    app.delete("/doctor/:email", verifyJwt, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
       const result = await doctorCollection.deleteOne(filter);
